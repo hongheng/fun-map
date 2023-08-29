@@ -9,7 +9,7 @@
 ;;Marker iterface for a funmap
    (definterface IFunMap
      (rawSeq []))
-   :cljs
+   :cljr
    (defprotocol  IFunMap
      (-raw-seq [m])))
 
@@ -28,7 +28,7 @@
      (valAt
        [this k not-found]
        (if-let #?(:clj [^clojure.lang.IMapEntry entry (.entryAt this k)]
-                  :cljs [entry (.entryAt this k)])
+                  :cljr [entry (.entryAt this k)])
          (.val entry)
          not-found))
 
@@ -40,7 +40,7 @@
        (.containsKey tm k))
      (entryAt [this k]
        (fn-entry this (.entryAt tm k))))
-   :cljs
+   :cljr
    (deftype TransientDelegatedMap [tm fn-entry]
      ITransientMap
      (-dissoc!
@@ -147,7 +147,7 @@
      clojure.lang.IEditableCollection
      (asTransient [_]
        (TransientDelegatedMap. (transient m) fn-entry)))
-   :cljs
+   :cljr
    (deftype DelegatedMap [m fn-entry]
      IFunMap
      (-raw-seq [_] (-seq m))
@@ -254,7 +254,7 @@
   (fn [m ^IMapEntry entry]
     (when-let [[k v] (fn-entry m entry)]
       #?(:clj (clojure.lang.MapEntry/create k v)
-         :cljs (cljs.core/MapEntry. k v nil)))))
+         :cljr (cljs.core/MapEntry. k v nil)))))
 
 (defn delegate-map
   "Return a delegated map"
@@ -264,7 +264,7 @@
 (defn fun-map?
   [o]
   #?(:clj (instance? IFunMap o)
-     :cljs (satisfies? IFunMap o)))
+     :cljr (satisfies? IFunMap o)))
 
 #?(:clj
    (do

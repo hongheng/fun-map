@@ -20,7 +20,7 @@
     (is (= {:a 2} (wrap-m {} #(conj! % [:a 1]))))
     (is (= {:b 4} (wrap-m {} #(-> % (conj! [:a 1]) (conj! [:b 2]) (dissoc! :a)))))))
 
-#?(:cljs
+#?(:cljr
    (deftest map-compatibility
      (testing "If it compatible to map's expected behavior"
        (let [m (sut/delegate-map {:a 1 :b 2 :c 3} (fn [_ [k v]] [k (* 2 v)]))]

@@ -18,7 +18,7 @@
               vec)]
         [`let bindings])
       [`let bindings]))
-   :cljs
+   :cljr
    (defn let-form
      [_ bindings]
      [`let bindings]))

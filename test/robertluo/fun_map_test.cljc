@@ -3,7 +3,7 @@
    [clojure.test :refer [deftest testing is]]
    #?(:clj
       [robertluo.fun-map :refer [fun-map? fnk fw fun-map closeable life-cycle-map touch halt! lookup]]
-      :cljs
+      :cljr
       [robertluo.fun-map 
        :as fm
        :refer [fun-map? fun-map touch life-cycle-map closeable halt!]
@@ -109,7 +109,7 @@
           m      (touch (life-cycle-map
                          {:a (fnk [] (closeable 3 #(swap! marker inc)))}))]
       (is (= {:a 3} m))
-      #?(:cljs (halt! m)
+      #?(:cljr (halt! m)
          :clj (.close m))
       (is (= 1 @marker)))))
 

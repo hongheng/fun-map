@@ -113,7 +113,7 @@
      java.io.Closeable
      (halt! [this]
        (.close this)))
-   :cljs
+   :cljr
    (extend-protocol Haltable
      core/DelegatedMap
      (halt! [this]
@@ -142,9 +142,9 @@
 ;;;;;;;;;;; Utilities
 
 (deftype CloseableValue [value close-fn]
-  #?(:clj clojure.lang.IDeref :cljs IDeref)
+  #?(:clj clojure.lang.IDeref :cljr IDeref)
   #?(:clj (deref [_] value)
-     :cljs (-deref [_] value))
+     :cljr (-deref [_] value))
   Haltable
   (halt! [_]
     (close-fn)))

@@ -30,7 +30,7 @@
   (-wrapped? [_ _] true)
   (-unwrap [_ m k]
     (f m k))
-  #?@(:cljs
+  #?@(:cljr
       [IPrintWithWriter
        (-pr-writer 
         [_ wtr _]
@@ -49,7 +49,7 @@
      (if (-wrapped? v m)
        (recur m [k (-unwrap v m k)])
        [k v])
-     :cljs
+     :cljr
      (cond
        (satisfies? ValueWrapper v) (recur m [k (-unwrap v m k)])
        (satisfies? IDeref v) (recur m [k (deref v)])
@@ -66,7 +66,7 @@
       (if (or (= ::unrealized val) (not= new-focus-val focus-val))
         (first (swap! a-val-pair (fn [_] [(-unwrap wrapped m k) new-focus-val])))
         val)))
-  #?@(:cljs
+  #?@(:cljr
       [IPrintWithWriter
        (-pr-writer
         [this wtr _]
