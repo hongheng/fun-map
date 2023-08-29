@@ -8,6 +8,10 @@
 #?(:cljr
    (do
 
+     (defprotocol IObjectIterable
+       (hasNext [_] )
+       (next [_] ))
+
      (defprotocol IObjectInCljs
        (toString [_])
        (equiv [this other])
@@ -342,7 +346,7 @@
      (-iterator
       [this]
       (let [ite (-iterator m)]
-        (reify Object
+        (reify IObjectIterable
           (hasNext [_]
             (.hasNext ite))
           (next [_]
