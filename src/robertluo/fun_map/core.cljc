@@ -5,6 +5,28 @@
                     IPersistentMap
                     ITransientMap])))
 
+#?(:cljr
+   (do
+
+     (defprotocol ITransientCollection
+       "Protocol for adding basic functionality to transient collections."
+       (^clj -conj! [tcoll val]
+         "Adds value val to tcoll and returns tcoll.")
+       (^clj -persistent! [tcoll]
+         "Creates a persistent data structure from tcoll and returns it."))
+
+     (defprotocol ITransientAssociative
+       "Protocol for adding associativity to transient collections."
+       (^clj -assoc! [tcoll key val]
+         "Returns a new transient collection of tcoll with a mapping from key to
+          val added to it."))
+
+     (defprotocol ITransientMap
+       "Protocol for adding mapping functionality to transient collections."
+       (^clj -dissoc! [tcoll key]
+         "Returns a new transient collection of tcoll without the mapping for key."))
+     ))
+
 #?(:clj
 ;;Marker iterface for a funmap
    (definterface IFunMap
@@ -46,12 +68,12 @@
      (-dissoc!
       [_ k]
       (TransientDelegatedMap. (-dissoc! tm k) fn-entry))
-     
+
      ITransientAssociative
      (-assoc!
       [_ k v]
       (TransientDelegatedMap. (-assoc! tm k v) fn-entry))
-     
+
      ITransientCollection
      (-persistent!
       [_]
