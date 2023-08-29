@@ -42,6 +42,13 @@
         be implemented efficiently in terms of e.g. a StringBuffer append."
        (-pr-writer [o writer opts]))
 
+     (defprotocol IWriter
+       "Protocol for writing. Currently only implemented by StringBufferWriter."
+       (-write [writer s]
+         "Writes s with writer and returns the result.")
+       (-flush [writer]
+         "Flush writer."))
+
      (defprotocol IMeta
        "Protocol for accessing the metadata of an object."
        (^clj-or-nil -meta [o]
