@@ -132,6 +132,44 @@
        "Protocol for adding mapping functionality to transient collections."
        (^clj -dissoc! [tcoll key]
          "Returns a new transient collection of tcoll without the mapping for key."))
+
+     (defprotocol IObjectEquiv
+       (equiv [this other]))
+
+     (deftype NeverEquiv []
+       IObjectEquiv ; Object
+       (equiv [this other]
+         (-equiv this other))
+       IEquiv
+       (-equiv [o other] false))
+
+     (def ^:private never-equiv (NeverEquiv.))
+
+     (defprotocol IKVReduce
+       "Protocol for associative types that can reduce themselves
+       via a function of key and val. Called by cljs.core/reduce-kv."
+       (-kv-reduce [coll f init]
+         "Reduces an associative collection and returns the result. f should be
+          a function that takes three arguments."))
+
+     (defn equiv-map
+       "Test map equivalence. Returns true if x equals y, otherwise returns false."
+       [x y]
+       (boolean
+        (when (and (map? y) (not (record? y)))
+          ; assume all maps are counted
+          (when (== (count x) (count y))
+            (if (satisfies? IKVReduce x)
+              (reduce-kv
+               (fn [_ k v]
+                 (if (= (get y k never-equiv) v)
+                   true
+                   (reduced false)))
+               true x)
+              (every?
+               (fn [xkv]
+                 (= (get y (first xkv) never-equiv) (second xkv)))
+               x))))))
      ))
 
 #?(:clj
