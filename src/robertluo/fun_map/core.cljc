@@ -421,7 +421,8 @@
   (fn [m ^IMapEntry entry]
     (when-let [[k v] (fn-entry m entry)]
       #?(:clj (clojure.lang.MapEntry/create k v)
-         :cljr (cljs.core/MapEntry. k v nil)))))
+         :cljr (clojure.lang.MapEntry/create k v)
+         :cljs (cljs.core/MapEntry. k v nil)))))
 
 (defn delegate-map
   "Return a delegated map"
