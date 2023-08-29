@@ -3,7 +3,7 @@
   (:require
    [robertluo.fun-map.core :as core]
    [robertluo.fun-map.wrapper :as wrapper]
-   #?(:clj
+   #?(:cljr
       [robertluo.fun-map.helper :as helper])))
 
 (defn fun-map
@@ -42,7 +42,7 @@
   (fun-map {:a 1 :b 5 :c (wrapper/fun-wrapper (fn [m _] (let [a (get m :a) b (get m :b)] (+ a b))))})
   )
 
-#?(:clj
+#?(:cljr
    (defmacro fw
      "Returns a FunctionWrapper of an anonymous function defined by body.
 
@@ -73,19 +73,19 @@
      [arg-map & body]
      (helper/make-fw-wrapper `wrapper/fun-wrapper [:trace :cache] arg-map body)))
 
-#?(:clj
+#?(:cljr
    (defmethod helper/fw-impl :trace
      [{:keys [f options]}]
      `(wrapper/trace-wrapper ~f ~(:trace options))))
 
-#?(:clj
+#?(:cljr
    (defmethod helper/fw-impl :cache
      [{:keys [f options arg-map]}]
      (let [focus (when-let [focus (:focus options)]
                    `(fn [~arg-map] ~focus))]
        `(wrapper/cache-wrapper ~f ~focus))))
 
-#?(:clj
+#?(:cljr
    (defmacro fnk
      "A shortcut for `fw` macro. Returns a simple FunctionWrapper which depends on
   `args` key of the fun-map, it will *focus* on the keys also."
@@ -113,6 +113,11 @@
      java.io.Closeable
      (halt! [this]
        (.close this)))
+   :cljr
+   (extend-protocol Haltable
+     System.IDisposable
+     (halt! [this]
+       (.Dispose this)))
    :cljs
    (extend-protocol Haltable
      core/DelegatedMap
@@ -142,8 +147,8 @@
 ;;;;;;;;;;; Utilities
 
 (deftype CloseableValue [value close-fn]
-  #?(:clj clojure.lang.IDeref :cljs IDeref)
-  #?(:clj (deref [_] value)
+  #?(:cljr clojure.lang.IDeref :cljs IDeref)
+  #?(:cljr (deref [_] value)
      :cljs (-deref [_] value))
   Haltable
   (halt! [_]
@@ -158,7 +163,7 @@
   [r close-fn]
   (->CloseableValue r close-fn))
 
-#?(:clj
+#?(:cljr
    (defn lookup
      "Returns a ILookup object for calling f on k"
      [f]

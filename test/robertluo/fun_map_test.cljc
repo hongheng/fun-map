@@ -1,7 +1,7 @@
 (ns robertluo.fun-map-test
   (:require
    [clojure.test :refer [deftest testing is]]
-   #?(:clj
+   #?(:cljr
       [robertluo.fun-map :refer [fun-map? fnk fw fun-map closeable life-cycle-map touch halt! lookup]]
       :cljs
       [robertluo.fun-map 
@@ -48,7 +48,7 @@
     (is (= 11
            (-> (fun-map {:a 2 :b (fnk [a] (inc a))}) (assoc :a 10) :b)))))
 
-#?(:clj
+#?(:cljr
    (deftest dref-test
      (testing "delay, future, delayed future value will be deref when accessed"
        (is (= {:a 3 :b 4 :c 5}
@@ -110,7 +110,7 @@
                          {:a (fnk [] (closeable 3 #(swap! marker inc)))}))]
       (is (= {:a 3} m))
       #?(:cljs (halt! m)
-         :clj (.close m))
+         :cljr (.close m))
       (is (= 1 @marker)))))
 
 (deftest fw-test
@@ -139,7 +139,7 @@
       (is (= 1 (:a m)))
       (is (= 2 (:a m))))))
 
-#?(:clj
+#?(:cljr
    (deftest parallel-execution-test
      (let [a (atom 5)
            m (fun-map {:a (delay (Thread/sleep 200) @a)
@@ -151,7 +151,7 @@
 (deftest idempotent-test
   (is (= {} (merge (fun-map (fun-map {})) {}))))
 
-#?(:clj
+#?(:cljr
    (deftest lookup-test
      (is (= 3 (get (lookup identity) 3)))
      (is (= [:foo :foo] (find (lookup identity) :foo)))))

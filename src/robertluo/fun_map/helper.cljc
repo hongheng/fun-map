@@ -1,9 +1,9 @@
 (ns robertluo.fun-map.helper
   "Helpers for writing wrappers"
   (:require
-   #?(:clj [robertluo.fun-map.util :as util])))
+   #?(:cljr [robertluo.fun-map.util :as util])))
 
-#?(:clj
+#?(:cljr
    (defn let-form
      "returns a pair first to let or equivalent, and the second to transformed bindings."
      [fm bindings]

@@ -9,7 +9,7 @@
     "unwrap the real value from a wrapper on the key of k"))
 
 ;; Make sure common value is not wrapped
-#?(:clj
+#?(:cljr
    (extend-protocol ValueWrapper
      Object
      (-wrapped? [_ _] false)
@@ -45,7 +45,7 @@
   "returns a k,v pair from map `m` and input k-v pair.
    If `v` is a wrapped, then recursive unwrap it."
   [m [k v]]
-  #?(:clj
+  #?(:cljr
      (if (-wrapped? v m)
        (recur m [k (-unwrap v m k)])
        [k v])

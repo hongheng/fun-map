@@ -1,11 +1,11 @@
 (ns ^:no-doc robertluo.fun-map.core
   "Where the fun starts."
-  (:import #?(:clj [clojure.lang
+  (:import #?(:cljr [clojure.lang
                     IMapEntry
                     IPersistentMap
                     ITransientMap])))
 
-#?(:clj
+#?(:cljr
 ;;Marker iterface for a funmap
    (definterface IFunMap
      (rawSeq []))
@@ -16,7 +16,7 @@
 (declare ->DelegatedMap)
 
 ;;Support transient
-#?(:clj
+#?(:cljr
    (deftype TransientDelegatedMap [^ITransientMap tm fn-entry]
      ITransientMap
      (conj [_ v] (TransientDelegatedMap. (.conj tm v) fn-entry))
@@ -27,7 +27,7 @@
      (valAt [this k] (.valAt this k nil))
      (valAt
        [this k not-found]
-       (if-let #?(:clj [^clojure.lang.IMapEntry entry (.entryAt this k)]
+       (if-let #?(:cljr [^clojure.lang.IMapEntry entry (.entryAt this k)]
                   :cljs [entry (.entryAt this k)])
          (.val entry)
          not-found))
@@ -46,12 +46,12 @@
      (-dissoc!
       [_ k]
       (TransientDelegatedMap. (-dissoc! tm k) fn-entry))
-     
+
      ITransientAssociative
      (-assoc!
       [_ k v]
       (TransientDelegatedMap. (-assoc! tm k v) fn-entry))
-     
+
      ITransientCollection
      (-persistent!
       [_]
@@ -60,13 +60,13 @@
       [_ pair]
       (TransientDelegatedMap. (-conj! tm pair) fn-entry))))
 
-#?(:clj
+#?(:cljr
 ;; DelegatedMap takes a map `m` and delegates most feature to it.
 ;; The magic happens on function `fn-entry`, which takes the delegated map
 ;; itself and a pair of kv as arguments. Returns a pair of kv.
    (deftype DelegatedMap [^IPersistentMap m fn-entry]
-     java.io.Closeable
-     (close
+     System.IDisposable
+     (Dispose
       [this]
       (when-let [close-fn (some-> this meta ::close-fn)]
         (close-fn this)))
@@ -181,7 +181,7 @@
      (-lookup
        [this k not-found]
        (or (some-> ^IMapEntry (-find this k) (val)) not-found))
-     
+
      IMap
      (-dissoc
       [_ k]
@@ -207,12 +207,12 @@
      (-count
        [_]
        (-count m))
-     
+
      IEmptyableCollection
      (-empty
       [_]
       (DelegatedMap. (-empty m) fn-entry))
-     
+
      IIterable
      (-iterator
       [this]
@@ -234,12 +234,12 @@
        [_ wtr opts]
        (-write wtr "#fun-map")
        (-pr-writer m wtr opts))
-     
+
      IWithMeta
      (-with-meta
       [_ meta]
       (DelegatedMap. (-with-meta m meta) fn-entry))
-     
+
      IMeta
      (-meta [_] (-meta m))
 
@@ -253,7 +253,7 @@
   [fn-entry]
   (fn [m ^IMapEntry entry]
     (when-let [[k v] (fn-entry m entry)]
-      #?(:clj (clojure.lang.MapEntry/create k v)
+      #?(:cljr (clojure.lang.MapEntry/create k v)
          :cljs (cljs.core/MapEntry. k v nil)))))
 
 (defn delegate-map
@@ -263,7 +263,7 @@
 
 (defn fun-map?
   [o]
-  #?(:clj (instance? IFunMap o)
+  #?(:cljr (instance? IFunMap o)
      :cljs (satisfies? IFunMap o)))
 
 #?(:clj
