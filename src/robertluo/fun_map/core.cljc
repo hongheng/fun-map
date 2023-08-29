@@ -8,6 +8,16 @@
 #?(:cljr
    (do
 
+     (defprotocol IObjectInCljs
+       (toString [_])
+       (equiv [this other])
+       (keys [_])
+       (entries [this])
+       (vals [this])
+       (has [this k])
+       (get [this k not-found])
+       (forEach [this f]))
+
      (defprotocol ICounted
        "Protocol for adding the ability to count a collection in constant time."
        (^number -count [coll]
@@ -259,7 +269,7 @@
    (deftype DelegatedMap [m fn-entry]
      IFunMap
      (-raw-seq [_] (-seq m))
-     Object
+     IObjectInCljs
      (toString [_] (.toString m))
      (equiv
        [this other]
