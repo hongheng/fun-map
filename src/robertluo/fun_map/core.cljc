@@ -21,7 +21,7 @@
          "Returns a new transient collection of tcoll with a mapping from key to
           val added to it."))
 
-     (defprotocol ITransientMap
+     (defprotocol ITransientMapInCljs
        "Protocol for adding mapping functionality to transient collections."
        (^clj -dissoc! [tcoll key]
          "Returns a new transient collection of tcoll without the mapping for key."))
@@ -64,7 +64,7 @@
        (fn-entry this (.entryAt tm k))))
    :cljr
    (deftype TransientDelegatedMap [tm fn-entry]
-     ITransientMap
+     ITransientMapInCljs
      (-dissoc!
       [_ k]
       (TransientDelegatedMap. (-dissoc! tm k) fn-entry))
