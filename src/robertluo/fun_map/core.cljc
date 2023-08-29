@@ -8,6 +8,92 @@
 #?(:cljr
    (do
 
+     (defprotocol ICounted
+       "Protocol for adding the ability to count a collection in constant time."
+       (^number -count [coll]
+         "Calculates the count of coll in constant time. Used by cljs.core/count."))
+
+     (defprotocol IEmptyableCollection
+       "Protocol for creating an empty collection."
+       (-empty [coll]
+         "Returns an empty collection of the same category as coll. Used
+          by cljs.core/empty."))
+
+     (defprotocol IIterable
+       "Protocol for iterating over a collection."
+       (-iterator [coll]
+         "Returns an iterator for coll."))
+
+     (defprotocol IPrintWithWriter
+       "The old IPrintable protocol's implementation consisted of building a giant
+        list of strings to concatenate.  This involved lots of concat calls,
+        intermediate vectors, and lazy-seqs, and was very slow in some older JS
+        engines.  IPrintWithWriter implements printing via the IWriter protocol, so it
+        be implemented efficiently in terms of e.g. a StringBuffer append."
+       (-pr-writer [o writer opts]))
+
+     (defprotocol IMeta
+       "Protocol for accessing the metadata of an object."
+       (^clj-or-nil -meta [o]
+         "Returns the metadata of object o."))
+
+     (defprotocol IWithMeta
+       "Protocol for adding metadata to an object."
+       (^clj -with-meta [o meta]
+         "Returns a new object with value of o and metadata meta added to it."))
+
+     (defprotocol IEditableCollection
+       "Protocol for collections which can transformed to transients."
+       (^clj -as-transient [coll]
+         "Returns a new, transient version of the collection, in constant time."))
+
+     (defprotocol IEquiv
+       "Protocol for adding value comparison functionality to a type."
+       (^boolean -equiv [o other]
+         "Returns true if o and other are equal, false otherwise."))
+
+     (defprotocol ISeqable
+       "Protocol for adding the ability to a type to be transformed into a sequence."
+       (^clj-or-nil -seq [o]
+         "Returns a seq of o, or nil if o is empty."))
+
+     (defprotocol ICollection
+       "Protocol for adding to a collection."
+       (^clj -conj [coll o]
+         "Returns a new collection of coll with o added to it. The new item
+          should be added to the most efficient place, e.g.
+          (conj [1 2 3 4] 5) => [1 2 3 4 5]
+          (conj '(2 3 4 5) 1) => '(1 2 3 4 5)"))
+
+     (defprotocol ILookup
+       "Protocol for looking up a value in a data structure."
+       (-lookup [o k] [o k not-found]
+         "Use k to look up a value in o. If not-found is supplied and k is not
+          a valid value that can be used for look up, not-found is returned."))
+
+     (defprotocol IAssociative
+       "Protocol for adding associativity to collections."
+       (^boolean -contains-key? [coll k]
+         "Returns true if k is a key in coll.")
+       #_(-entry-at [coll k])
+       (^clj -assoc [coll k v]
+         "Returns a new collection of coll with a mapping from key k to
+          value v added to it."))
+
+     (defprotocol IFind
+       "Protocol for implementing entry finding in collections."
+       (-find [coll k] "Returns the map entry for key, or nil if key not present."))
+
+     (defprotocol IMap
+       "Protocol for adding mapping functionality to collections."
+       #_(-assoc-ex [coll k v])
+       (^clj -dissoc [coll k]
+         "Returns a new collection of coll without the mapping for key k."))
+
+
+
+
+
      (defprotocol ITransientCollection
        "Protocol for adding basic functionality to transient collections."
        (^clj -conj! [tcoll val]
