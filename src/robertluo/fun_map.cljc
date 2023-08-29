@@ -6,6 +6,16 @@
    #?(:clj
       [robertluo.fun-map.helper :as helper])))
 
+#?(:cljr
+   (do
+
+     (defprotocol IDeref
+       "Protocol for adding dereference functionality to a reference."
+       (-deref [o]
+         "Returns the value of the reference o."))
+
+     ))
+
 (defn fun-map
   "Returns a new fun-map.
 
