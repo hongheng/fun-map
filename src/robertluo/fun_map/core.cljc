@@ -20,9 +20,9 @@
    (deftype TransientDelegatedMap [^ITransientMap tm fn-entry]
      ITransientMap
      (conj [_ v] (TransientDelegatedMap. (.conj tm v) fn-entry))
-     (persistent [_] (->DelegatedMap (persistent! tm) fn-entry))
+     (clojure.lang.ITransientMap.persistent [_] (->DelegatedMap (persistent! tm) fn-entry))
      ;;ITransientAssociative
-     (assoc [_ k v] (TransientDelegatedMap. (.assoc tm k v) fn-entry))
+     (clojure.lang.ITransientMap.assoc [_ k v] (TransientDelegatedMap. (.assoc tm k v) fn-entry))
      ;;ILookup
      (valAt [this k] (.valAt this k nil))
      (valAt
