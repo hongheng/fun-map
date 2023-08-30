@@ -77,9 +77,9 @@
      clojure.lang.IHashEq
      (hasheq [_]
        (.hasheq ^clojure.lang.IHashEq m))
-     (hashCode [_]
-       (.hashCode m))
-     (equals [this other]
+     (System.Object.GetHashCode [_]
+       (.GetHashCode ^System.Object m))
+     (System.Object.Equals [this other]
        (clojure.lang.APersistentMap/mapEquals this other))
      clojure.lang.IObj
      (meta [_]
@@ -94,11 +94,11 @@
          (.valAt this k)
          not-found))
      clojure.lang.IPersistentMap
-     (count [_]
+     (clojure.lang.IPersistentMap.count [_]
        (.count m))
      (empty [_]
        (DelegatedMap. (.empty m) fn-entry))
-     (cons [_ o]
+     (clojure.lang.IPersistentMap.cons [_ o]
        (DelegatedMap.
         (.cons m (if (instance? IFunMap o) (.rawSeq ^IFunMap o) o))
         fn-entry))
@@ -110,21 +110,23 @@
        (when (.containsKey m k)
          (fn-entry this (.entryAt m k))))
      (seq [this]
-       (clojure.lang.IteratorSeq/create (.iterator this)))
-     (iterator [this]
-       (let [ite (.iterator m)]
-         (reify java.util.Iterator
-           (hasNext [_]
-             (.hasNext ite))
-           (next [_]
-             (fn-entry this (.next ite))))))
-     (assoc [_ k v]
+       (clojure.lang.EnumeratorSeq/create (.GetEnumerator ^System.Collections.IEnumerable this)))
+     (System.Collections.IEnumerable.GetEnumerator [this]
+       (let [ite (.GetEnumerator ^System.Collections.IEnumerable m)]
+         (reify System.Collections.IEnumerator
+           (MoveNext [_]
+             (.MoveNext ite))
+           (get_Current [_]
+             (fn-entry this (.Current ite)))
+           (Reset [_]
+            (.Reset ite)))))
+     (clojure.lang.IPersistentMap.assoc [_ k v]
        (DelegatedMap. (.assoc m k v) fn-entry))
      (assocEx [_ k v]
        (DelegatedMap. (.assocEx m k v) fn-entry))
      (without [_ k]
        (DelegatedMap. (.without m k) fn-entry))
-     java.util.Map
+     #_[java.util.Map
      (size [this]
        (.count this))
      (isEmpty [this]
@@ -142,7 +144,7 @@
      (put [_ _ _] (throw (UnsupportedOperationException.)))
      (remove [_ _] (throw (UnsupportedOperationException.)))
      (putAll [_ _] (throw (UnsupportedOperationException.)))
-     (clear [_] (throw (UnsupportedOperationException.)))
+     (clear [_] (throw (UnsupportedOperationException.)))]
 
      clojure.lang.IEditableCollection
      (asTransient [_]
