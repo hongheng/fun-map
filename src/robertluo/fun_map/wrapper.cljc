@@ -66,7 +66,9 @@
           new-focus-val (if focus-fn (focus-fn m) ::unrealized)]
       (if (or (= ::unrealized val) (not= new-focus-val focus-val))
         (first (swap! a-val-pair (fn [_] [(-unwrap wrapped m k) new-focus-val])))
-        val)))
+        (if (some false? (map identical? new-focus-val focus-val))
+          (first (swap! a-val-pair (fn [_] [val new-focus-val])))
+          val))))
   #?@(:cljs
       [IPrintWithWriter
        (-pr-writer
