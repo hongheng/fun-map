@@ -9,7 +9,8 @@
     "unwrap the real value from a wrapper on the key of k"))
 
 ;; Make sure common value is not wrapped
-#?(:clj
+#?(:cljs nil
+   :default
    (extend-protocol ValueWrapper
      Object
      (-wrapped? [_ _] false)
@@ -45,15 +46,15 @@
   "returns a k,v pair from map `m` and input k-v pair.
    If `v` is a wrapped, then recursive unwrap it."
   [m [k v]]
-  #?(:clj
-     (if (-wrapped? v m)
-       (recur m [k (-unwrap v m k)])
-       [k v])
-     :cljs
+  #?(:cljs
      (cond
        (satisfies? ValueWrapper v) (recur m [k (-unwrap v m k)])
        (satisfies? IDeref v) (recur m [k (deref v)])
-       :else [k v])))
+       :else [k v])
+     :default
+     (if (-wrapped? v m)
+       (recur m [k (-unwrap v m k)])
+       [k v])))
 
 ;;;;;;;;;;; High order wrappers
 
@@ -65,7 +66,9 @@
           new-focus-val (if focus-fn (focus-fn m) ::unrealized)]
       (if (or (= ::unrealized val) (not= new-focus-val focus-val))
         (first (swap! a-val-pair (fn [_] [(-unwrap wrapped m k) new-focus-val])))
-        val)))
+        (if (some false? (map identical? new-focus-val focus-val))
+          (first (swap! a-val-pair (fn [_] [val new-focus-val])))
+          val))))
   #?@(:cljs
       [IPrintWithWriter
        (-pr-writer
