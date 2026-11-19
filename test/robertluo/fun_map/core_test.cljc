@@ -13,6 +13,17 @@
       (is (= {:a 2 :b 4} m))
       (is (= m {:a 2 :b 4})))))
 
+(deftest delegate-map-lookup-falsy-values
+  (testing "键存在时返回它的值（包括 false 和 nil），键不存在才返回 not-found"
+    (let [m (sut/delegate-map {:a false :b nil :c 1} (fn [_ entry] entry))]
+      (is (false? (get m :a)))
+      (is (false? (get m :a :not-found)))
+      (is (nil? (get m :b)))
+      (is (nil? (get m :b :not-found)))
+      (is (= 1 (get m :c :not-found)))
+      (is (nil? (get m :d)))
+      (is (= :not-found (get m :d :not-found))))))
+
 (deftest transient-test
   (letfn [(wrap-m [m f] (-> m (sut/delegate-map (fn [_ [k v]] [k (* 2 v)])) transient f persistent!))]
     (is (= {} (wrap-m {} identity)))
