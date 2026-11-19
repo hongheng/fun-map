@@ -1,10 +1,10 @@
 (ns ^:no-doc robertluo.fun-map.core
   "Where the fun starts."
-  (:import #?(:cljs []
-              :default [clojure.lang
-                        IMapEntry
-                        IPersistentMap
-                        ITransientMap])))
+  #?@(:cljs []
+      :default [(:import [clojure.lang
+                          IMapEntry
+                          IPersistentMap
+                          ITransientMap])]))
 
 #?(
 ;;Marker iterface for a funmap
@@ -140,7 +140,7 @@
      IIterable
      (-iterator
       [this]
-      (let [ite (-iterator m)]
+      (let [^js ite (-iterator m)]
         (reify Object
           (hasNext [_]
             (.hasNext ite))

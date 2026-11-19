@@ -4,7 +4,9 @@
    [robertluo.fun-map.core :as core]
    [robertluo.fun-map.wrapper :as wrapper]
    #?@(:cljs []
-       :default [[robertluo.fun-map.helper :as helper]])))
+       :default [[robertluo.fun-map.helper :as helper]]))
+  ;; CLJS：fw、fnk 等宏定义在本文件的 CLJ 一侧，自引用宏命名空间后，使用方 :refer [fnk] 即可
+  #?@(:cljs [(:require-macros [robertluo.fun-map])]))
 
 (defn fun-map
   "Returns a new fun-map.
