@@ -1,10 +1,10 @@
 (ns ^:no-doc robertluo.fun-map.core
   "Where the fun starts."
-  (:import #?(:cljs []
-              :default [clojure.lang
-                        IMapEntry
-                        IPersistentMap
-                        ITransientMap])))
+  #?@(:cljs []
+      :default [(:import [clojure.lang
+                          IMapEntry
+                          IPersistentMap
+                          ITransientMap])]))
 
 #?(
 ;;Marker iterface for a funmap
@@ -104,7 +104,11 @@
        (-lookup this k nil))
      (-lookup
        [this k not-found]
-       (or (some-> ^IMapEntry (-find this k) (val)) not-found))
+       ;; 与 JVM 的 valAt 一致：键存在就返回它的值（包括 false 和 nil），不存在才返回 not-found。
+       ;; 原写法 (or (some-> ...) not-found) 把值为 false 的键读成 not-found（单参数时为 nil）。
+       (if-let [^IMapEntry entry (-find this k)]
+         (val entry)
+         not-found))
 
      IMap
      (-dissoc
@@ -140,7 +144,7 @@
      IIterable
      (-iterator
       [this]
-      (let [ite (-iterator m)]
+      (let [^js ite (-iterator m)]
         (reify Object
           (hasNext [_]
             (.hasNext ite))
