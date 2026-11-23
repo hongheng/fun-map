@@ -361,7 +361,7 @@
      IIterable
      (-iterator
        [this]
-       (let [ite (-iterator m)]
+       (let [^js ite (-iterator m)]
          (reify Object
            (hasNext [_]
              (.hasNext ite))
