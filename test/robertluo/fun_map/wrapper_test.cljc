@@ -50,3 +50,14 @@
          (is (thrown-with-msg? clojure.lang.ExceptionInfo
                                #"Error computing key :result"
                                (:result m)))))))
+
+(deftest error-in-function-wrapper
+  (testing "the error names the failing key and computes no other value"
+    (let [computed (atom [])
+          m (fun-map (array-map :a (fnk [] (swap! computed conj :a) 1)
+                                :boom (fnk [] (throw (ex-info "boom" {})))
+                                :z (fnk [] (swap! computed conj :z) 26)))
+          ex (try (:boom m) nil (catch #?(:cljs :default :default Exception) e e))]
+      (is (= :function-wrapper-error (:type (ex-data ex))))
+      (is (= :boom (:key (ex-data ex))))
+      (is (= [] @computed)))))

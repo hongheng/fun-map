@@ -1,7 +1,8 @@
 (ns robertluo.fun-map.wrapper
   "Protocols that sharing with other namespaces"
   (:require [clojure.string :as str]
-            #?(:cljr [robertluo.fun-map.core])))
+            #?(:cljr [robertluo.fun-map.core]
+               :cljs [robertluo.fun-map.core :as core])))
 
 (defprotocol ValueWrapper
   "A wrapper for a value."
@@ -42,8 +43,9 @@
    In CLJS, falls back to regular keys (only used in error messages)."
   [m]
   #?(:cljs
-     (if-let [raw-seq-fn (some-> m meta ::-raw-seq-fn)]
-       (map first (raw-seq-fn))
+     ;; `keys` would unwrap every value, re-entering the key being computed
+     (if (satisfies? core/IFunMap m)
+       (map first (core/-raw-seq m))
        (keys m))
      :default
      (if (instance? robertluo.fun_map.core.IFunMap m)
