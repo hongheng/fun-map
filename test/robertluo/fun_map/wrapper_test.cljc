@@ -1,8 +1,7 @@
 (ns robertluo.fun-map.wrapper-test
   (:require
    [clojure.test :refer [deftest is testing]]
-   #?(:cljs [robertluo.fun-map :refer [fun-map] :refer-macros [fnk]]
-      :default [robertluo.fun-map :refer [fun-map fnk]])
+   [robertluo.fun-map :refer [fun-map fnk]]
    [robertluo.fun-map.wrapper :as sut]))
 
 (deftest wrapper-entry

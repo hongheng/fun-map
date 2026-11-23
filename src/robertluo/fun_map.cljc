@@ -5,7 +5,8 @@
    [robertluo.fun-map.wrapper :as wrapper]
    #?@(:cljs []
        :default
-       [[robertluo.fun-map.helper :as helper]])))
+       [[robertluo.fun-map.helper :as helper]]))
+  #?(:cljs (:require-macros [robertluo.fun-map])))
 
 (defn fun-map
   "Returns a new fun-map.
