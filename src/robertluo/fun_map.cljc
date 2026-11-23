@@ -3,9 +3,9 @@
   (:require
    [robertluo.fun-map.core :as core]
    [robertluo.fun-map.wrapper :as wrapper]
-   #?(:cljs nil
-      :default
-      [robertluo.fun-map.helper :as helper])))
+   #?@(:cljs []
+       :default
+       [[robertluo.fun-map.helper :as helper]])))
 
 (defn fun-map
   "Returns a new fun-map.
